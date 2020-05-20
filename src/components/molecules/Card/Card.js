@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import Paragraph from 'components/atoms/Paragraph/Paragraph';
 import Heading from 'components/atoms/Heading/Heading';
 import Button from 'components/atoms/Button/Button';
 import LinkIcon from 'assets/icons/link.svg';
+import { connect } from 'react-redux';
+import { removeItem as removeItemAction } from 'actions';
+import withContext from 'hoc/withContext';
 
 const StyledWrapper = styled.div`
   min-height: 380px;
@@ -46,7 +50,7 @@ const StyledHeading = styled(Heading)`
 const StyledAvatar = styled.img`
   width: 86px;
   height: 86px;
-  border: 5px solid ${({ theme }) => theme.twitter};
+  border: 5px solid ${({ theme }) => theme.twitters};
   border-radius: 50px;
   position: absolute;
   right: 25px;
@@ -66,30 +70,59 @@ const StyledLinkButton = styled.a`
   background-position: 50%;
 `;
 
-const Card = ({ cardType }) => (
-  <StyledWrapper>
-    <InnerWrapper activeColor={cardType}>
-      <StyledHeading>Hello Jedrzej</StyledHeading>
-      <DateInfo>3 days</DateInfo>
-      {cardType === 'twitter' && <StyledAvatar src="https://avatars.io/twitter/hello_roman" />}
-      {cardType === 'article' && <StyledLinkButton href="https://youtube.com" />}
-    </InnerWrapper>
-    <InnerWrapper flex>
-      <Paragraph>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet debitis sunt dolorem magni,
-        cumque neque veritatis harum ut sapiente!
-      </Paragraph>
-      <Button secondary>REMOVE</Button>
-    </InnerWrapper>
-  </StyledWrapper>
-);
+class Card extends Component {
+  state = {
+    redirect: false,
+  };
+
+  handleCardClick = () => this.setState({ redirect: true });
+
+  render() {
+    const { pageContext, title, created, articleUrl, content, id, removeItem } = this.props;
+    const { redirect } = this.state;
+
+    if (redirect) {
+      return <Redirect to={`${pageContext}/${id}`} />;
+    }
+
+    return (
+      <StyledWrapper onClick={this.handleCardClick}>
+        <InnerWrapper activeColor={pageContext}>
+          <StyledHeading>{title}</StyledHeading>
+          <DateInfo>{created}</DateInfo>
+          {pageContext === 'twitters' && (
+            <StyledAvatar src="https://yt3.ggpht.com/a/AATXAJw3R4al8mLWXHqKHSEboR4AVrcS1o87GLKk4g=s900-c-k-c0xffffffff-no-rj-mo" />
+          )}
+          {pageContext === 'articles' && <StyledLinkButton href={articleUrl} />}
+        </InnerWrapper>
+        <InnerWrapper flex>
+          <Paragraph>{content}</Paragraph>
+          <Button onClick={() => removeItem(pageContext, id)} secondary>
+            REMOVE
+          </Button>
+        </InnerWrapper>
+      </StyledWrapper>
+    );
+  }
+}
 
 Card.propTypes = {
-  cardType: PropTypes.oneOf(['note', 'twitter', 'article']),
+  id: PropTypes.number.isRequired,
+  pageContext: PropTypes.oneOf(['notes', 'twitters', 'articles']),
+  title: PropTypes.string.isRequired,
+  created: PropTypes.string.isRequired,
+  articleUrl: PropTypes.string,
+  content: PropTypes.string.isRequired,
+  removeItem: PropTypes.func.isRequired,
 };
 
 Card.defaultProps = {
-  cardType: 'note',
+  pageContext: 'notes',
+  articleUrl: null,
 };
 
-export default Card;
+const mapDispatchToProps = (dispatch) => ({
+  removeItem: (itemType, id) => dispatch(removeItemAction(itemType, id)),
+});
+
+export default connect(null, mapDispatchToProps)(withContext(Card));

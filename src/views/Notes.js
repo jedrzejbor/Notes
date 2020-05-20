@@ -1,12 +1,46 @@
 import React from 'react';
-import UserPageTemplate from 'templates/UserPageTemplate';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import GridTemplate from 'templates/GridTemplate';
+import Card from 'components/molecules/Card/Card';
 
-const Notes = () => {
+const Notes = ({ notes }) => {
   return (
-    <UserPageTemplate pageType="note">
-      <h1>Notes view</h1>
-    </UserPageTemplate>
+    <GridTemplate pageType="notes">
+      <>
+        {notes.map(({ id, title, content, created }) => (
+          <Card
+            id={id}
+            key={id}
+            cardType="notes"
+            title={title}
+            content={content}
+            created={created}
+          />
+        ))}
+      </>
+    </GridTemplate>
   );
 };
 
-export default Notes;
+Notes.propTypes = {
+  notes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      title: PropTypes.string.isRequired,
+      content: PropTypes.string.isRequired,
+      created: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
+Notes.defaultProps = {
+  notes: [],
+};
+
+const mapStateToProps = (state) => {
+  const { notes } = state;
+  return { notes };
+};
+
+export default connect(mapStateToProps)(Notes);
