@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import UserPageTemplate from 'templates/UserPageTemplate';
 import PropTypes from 'prop-types';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import Heading from 'components/atoms/Heading/Heading';
 import Paragraph from 'components/atoms/Paragraph/Paragraph';
 import Button from 'components/atoms/Button/Button';
+import withContext from 'hoc/withContext';
 
 const StyledWrapper = styled.div`
   margin: 70px 70px;
@@ -61,16 +62,6 @@ const StyledButton = styled(Button)`
   align-items: center;
   margin: 80px 0 20px 0;
   text-decoration: none;
-  ${({ pageType }) =>
-    pageType === 'twitters' &&
-    css`
-      background-color: ${({ theme }) => theme.twitters};
-    `}
-  ${({ pageType }) =>
-    pageType === 'articles' &&
-    css`
-      background-color: ${({ theme }) => theme.articles};
-    `};
 `;
 
 const DetailsTemplate = ({ pageContext, title, twitterName, created, articleUrl, content }) => (
@@ -90,7 +81,7 @@ const DetailsTemplate = ({ pageContext, title, twitterName, created, articleUrl,
         <StyledA href={`https://twitter.com/${twitterName}`}>OPEN THIS TWITTER</StyledA>
       )}
       {pageContext === 'articles' && <StyledA href={articleUrl}>OPEN THIS ARTICLE</StyledA>}
-      <StyledButton as={Link} to={`/${pageContext}`} pageType={pageContext}>
+      <StyledButton as={Link} to={`/${pageContext}`} activecolor={pageContext}>
         CLOSE/SAVE
       </StyledButton>
       <StyledLink to="/">remove note</StyledLink>
@@ -115,4 +106,4 @@ DetailsTemplate.defaultProps = {
   twitterName: '',
 };
 
-export default DetailsTemplate;
+export default withContext(DetailsTemplate);

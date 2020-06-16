@@ -68,7 +68,7 @@ Sidebar.propTypes = {
 };
 
 Sidebar.defaultProps = {
-  pageContext: 'note',
+  pageContext: 'notes',
 };
 
 export default withContext(Sidebar);
