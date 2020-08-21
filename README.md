@@ -1,3 +1,5 @@
+PROJEKT TWORZONY NA PODSTAWIE KURSU HELLO ROMANA 
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
